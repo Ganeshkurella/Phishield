@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { ShieldAlert, ShieldCheck, Activity, Flag } from "lucide-react";
 import DashboardStats from "../components/DashboardStats";
 import ScamAnalyzer from "../components/ScamAnalyzer";
-import SecurityHistory from "../components/SecurityHistory";
+import DashboardChart from "../components/DashboardChart";
 import { motion } from "framer-motion";
 
 const Dashboard = () => {
@@ -32,18 +32,16 @@ const Dashboard = () => {
           </p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <DashboardStats />
-
         {/* Main Analyzer */}
-        <div className="mt-12">
+        <div className="mb-12">
           <ScamAnalyzer />
         </div>
 
-        {/* Security History */}
-        <div className="mt-16">
-          <SecurityHistory />
-        </div>
+        {/* Stats Grid */}
+        <DashboardStats />
+
+        {/* Dashboard Chart */}
+        <DashboardChart />
       </main>
 
       <Footer />

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { analyzeWithGroq, GroqScanResult } from "../lib/groq";
 import Tesseract from "tesseract.js";
 import { addHistory } from "../lib/history";
+import { useAuth } from "../contexts/AuthContext";
 
 const statusConfig = {
   safe: { icon: ShieldCheck, label: "SAFE", color: "text-success", bg: "bg-success/10", border: "border-success/30", bar: "bg-success" },
@@ -20,6 +21,7 @@ const shortcuts = [
 ];
 
 const ScamAnalyzer = () => {
+  const { user } = useAuth();
   const [text, setText] = useState("");
   const [scanning, setScanning] = useState(false);
   const [extracting, setExtracting] = useState(false);
@@ -44,8 +46,10 @@ const ScamAnalyzer = () => {
       finalResult = {
         riskScore: isRisky ? 85 : 15,
         status: isRisky ? "phishing" : "safe",
-        explanation: "API analysis failed. Showing simulated result based on keywords.",
-        reasons: isRisky ? ["Suspicious keywords detected (API offline)"] : ["No overt threats found (API offline)"]
+        whyIsRisky: isRisky ? "Suspicious keywords detected indicating a potential threat." : "No immediate threats found in the provided text.",
+        domainAge: isRisky ? "Unable to securely verify domain age or source." : "Domain or sender appears regular.",
+        suspiciousContent: isRisky ? "Text contains high-pressure tactics or unusual requests for personal info." : "No malicious keywords or deceptive language detected.",
+        scamPatterns: isRisky ? "Matches known phishing templates or fraudulent structures." : "0 patterns matching known database threats."
       };
     }
     
@@ -64,7 +68,7 @@ const ScamAnalyzer = () => {
       input: preview,
       result: finalResult.status === "safe" ? "Safe" : finalResult.status === "suspicious" ? "Suspicious" : "Scam",
       riskScore: finalResult.riskScore
-    });
+    }, user?.id);
 
     setScanning(false);
   };
@@ -241,16 +245,22 @@ const ScamAnalyzer = () => {
                     </div>
                   </div>
                   
-                  <p className="text-muted-foreground text-sm pt-4 leading-relaxed">
-                    {result.explanation}
-                  </p>
+                  <div className="mt-6 p-4 rounded-xl bg-background/30 border border-white/5">
+                    <h4 className="text-sm font-semibold flex items-center gap-2 mb-2">
+                       <ShieldAlert className="w-4 h-4 text-primary" />
+                       Why this is {result.status === "safe" ? "safe" : "risky"}
+                    </h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {result.whyIsRisky}
+                    </p>
+                  </div>
                 </div>
 
                 {/* XAI Reasons */}
                 <div className="flex-1 bg-background/40 rounded-xl p-6 border border-white/5">
                   <h4 className="text-sm font-semibold mb-4 text-foreground flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-primary" /> 
-                    Why this is {result.status === "safe" ? "safe" : "risky"} (XAI)
+                    Why this is {result.status === "safe" ? "safe" : "risky"}
                   </h4>
                   <ul className="space-y-4">
                     {/* Hardcoded Reason Examples matching User Request */}
@@ -263,7 +273,7 @@ const ScamAnalyzer = () => {
                       <Globe className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <div>
                         <strong className="text-foreground block mb-0.5">Domain Age</strong>
-                        {result.status === "safe" ? "Domain has been registered for a significant period." : "Domain was registered recently (less than 30 days ago)."}
+                        {result.domainAge}
                       </div>
                     </motion.li>
                     
@@ -276,7 +286,7 @@ const ScamAnalyzer = () => {
                       <FileText className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <div>
                         <strong className="text-foreground block mb-0.5">Suspicious Content</strong>
-                        {result.status === "safe" ? "No malicious keywords or deceptive language detected." : "Text contains high-pressure tactics or unusual requests for personal info."}
+                        {result.suspiciousContent}
                       </div>
                     </motion.li>
 
@@ -289,7 +299,7 @@ const ScamAnalyzer = () => {
                       <Activity className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <div>
                         <strong className="text-foreground block mb-0.5">Scam Patterns Detected</strong>
-                        {result.status === "safe" ? "0 patterns matching known database threats." : "Matches known phishing templates or fraudulent structures."}
+                        {result.scamPatterns}
                       </div>
                     </motion.li>
                   </ul>

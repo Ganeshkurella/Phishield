@@ -8,8 +8,10 @@ const groq = new Groq({
 export interface GroqScanResult {
   riskScore: number;
   status: "safe" | "suspicious" | "phishing";
-  explanation: string;
-  reasons: string[];
+  whyIsRisky: string;
+  domainAge: string;
+  suspiciousContent: string;
+  scamPatterns: string;
 }
 
 const SYSTEM_PROMPT = `
@@ -23,8 +25,10 @@ The JSON object MUST match this exact structure:
 {
   "riskScore": number, // A number from 0 to 100 representing the threat level
   "status": "safe" | "suspicious" | "phishing", // Based on the score (0-14=safe, 15-59=suspicious, 60-100=phishing)
-  "explanation": "string", // A 1-2 sentence human-readable explanation of your findings
-  "reasons": ["string", "string"] // An array of 2-4 primary SHAP-like explanations for the score (e.g. "Upfront fee requested", "Clean domain reputation")
+  "whyIsRisky": "string", // 1-2 lines specifically explaining why this content is risky (or safe)
+  "domainAge": "string", // 1-2 lines detailing the domain age or sender credibility
+  "suspiciousContent": "string", // 1-2 lines detailing any suspicious content like high-pressure tactics
+  "scamPatterns": "string" // 1-2 lines detailing known scam patterns matching this content
 }
 `;
 

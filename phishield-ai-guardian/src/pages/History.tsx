@@ -4,6 +4,7 @@ import { ShieldCheck, ShieldAlert, AlertTriangle, Search, Filter } from "lucide-
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { getHistory, HistoryItem } from "../lib/history";
+import { useAuth } from "../contexts/AuthContext";
 
 const historyData: HistoryItem[] = [
   { id: 1, date: "Mar 17, 2026", type: "URL", input: "paypal-login-security-update.com", result: "Scam", riskScore: 98 },
@@ -46,12 +47,13 @@ const getRiskColor = (score: number) => {
 };
 
 const HistoryPage = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [dynamicHistory, setDynamicHistory] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
-    setDynamicHistory(getHistory());
-  }, []);
+    setDynamicHistory(getHistory(user?.id));
+  }, [user?.id]);
 
   const allHistory = [...dynamicHistory, ...historyData];
 

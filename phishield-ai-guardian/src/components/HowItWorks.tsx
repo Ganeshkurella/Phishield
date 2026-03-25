@@ -2,11 +2,11 @@ import { User, Globe, Cpu, BarChart3, ShieldCheck, ArrowRight } from "lucide-rea
 import { motion } from "framer-motion";
 
 const steps = [
-  { icon: User, label: "User Browses", desc: "You visit a website normally" },
-  { icon: Globe, label: "Extension Intercepts", desc: "Browser extension captures URL" },
-  { icon: Cpu, label: "Feature Extraction", desc: "30+ features extracted from URL" },
-  { icon: BarChart3, label: "AI Models Analyze", desc: "XGBoost + CNN score the threat" },
-  { icon: ShieldCheck, label: "Block & Warn", desc: "Instant protection if threat found" },
+  { icon: User, label: "Data Collection", desc: "Gather URLs or textual messages" },
+  { icon: Globe, label: "Feature Extraction", desc: "Extracting 30+ lexical features" },
+  { icon: Cpu, label: "Decision Trees", desc: "Building independent decision trees" },
+  { icon: BarChart3, label: "Random Forest", desc: "Aggregating tree predictions" },
+  { icon: ShieldCheck, label: "Classification", desc: "Safe or Phishing by majority vote" },
 ];
 
 const HowItWorks = () => {
